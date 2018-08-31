@@ -1,0 +1,34 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+
+    - name: Copy template grafana repo
+      template:
+        src: templates/grafana.repo
+        dest: /etc/yum.repos.d/grafana.repo
+      become: true
+
+    - name: Install Grafana
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - grafana
+        - fontconfig
+        - freetype*
+        - urw-fonts
+        - wget
+      become: true
+
+    - name: systemctl daemon-reload
+      raw: systemctl daemon-reload
+      become: true
+    
+    - name: systemctl enable
+      raw: systemctl enable grafana-server
+      become: true  
+
+    - name: systemctl start
+      raw: systemctl start grafana-server.service
+      become: true  
